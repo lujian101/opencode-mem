@@ -35,7 +35,8 @@ function resolveProjectName(project: unknown, directory: string): string {
   if (typeof project === "object" && project !== null) {
     const worktree = (project as Record<string, unknown>).worktree;
     if (typeof worktree === "string" && worktree.length > 0) {
-      return basename(worktree);
+      const name = basename(worktree);
+      if (name) return name;  // Check if result is empty
     }
   }
   return basename(directory);
@@ -151,7 +152,7 @@ function buildHooks(
       projectName,
     ) as PluginHooks["experimental.session.compacting"],
     "command.execute.before": createCommandExecuteHook(memClient) as PluginHooks["command.execute.before"],
-    "experimental.text.complete": createTextCompleteHook(memClient, state) as PluginHooks["experimental.text.complete"],
+    "experimental.text.complete": createTextCompleteHook(memClient, state, cwd) as PluginHooks["experimental.text.complete"],
   };
 }
 

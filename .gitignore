@@ -8,3 +8,6 @@ build
 
 .sisyphus/
 .omc/
+
+# Local development documentation
+LOCAL_DEV.md
