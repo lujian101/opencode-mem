@@ -8,6 +8,7 @@ import { MAX_OUTPUT_BYTES } from "../constants.js";
 export function createTextCompleteHook(
   memClient: ClaudeMemClient,
   state: PluginState,
+  cwd = "",
 ) {
   return async (
     input: { sessionID: string; messageID: string; partID: string },
@@ -32,6 +33,10 @@ export function createTextCompleteHook(
         partID: input.partID,
       },
       tool_response: cleanText,
+      cwd: cwd || undefined,
+      last_user_message: state.lastUserMessage || undefined,
+      last_assistant_message: state.lastAssistantMessage || undefined,
+      prompt_number: state.promptNumber > 0 ? state.promptNumber : undefined,
     });
   };
 }

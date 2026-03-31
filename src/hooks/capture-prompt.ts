@@ -25,8 +25,9 @@ export function createCapturePromptHook(
     input: { sessionID: string; agent?: string },
     output: { message: unknown; parts: unknown[] },
   ): Promise<void> => {
-    // Guard: skip if no sessionID or if this is a non-user message (agent field present)
-    if (!input.sessionID || input.agent) {
+    // Guard: skip if no sessionID
+    if (!input.sessionID) {
+      console.log("[opencode-claude-mem] Skipped - no sessionID, agent:", input.agent);
       return;
     }
 

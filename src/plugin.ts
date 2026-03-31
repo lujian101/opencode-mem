@@ -32,13 +32,23 @@ type PluginFactories = {
 };
 
 function resolveProjectName(project: unknown, directory: string): string {
+  // Priority 1: Use worktree basename if available and valid
   if (typeof project === "object" && project !== null) {
     const worktree = (project as Record<string, unknown>).worktree;
     if (typeof worktree === "string" && worktree.length > 0) {
-      return basename(worktree);
+      const name = basename(worktree);
+      if (name) return name;
     }
   }
-  return basename(directory);
+
+  // Priority 2: Use directory basename
+  if (directory && directory.length > 0) {
+    const name = basename(directory);
+    if (name) return name;
+  }
+
+  // Priority 3: Fallback to current working directory
+  return basename(process.cwd());
 }
 
 function createLogger(client: PluginClientLike): { log: (msg: string, level?: LogLevel) => void; setReady: () => void } {
@@ -150,8 +160,8 @@ function buildHooks(
       memClient,
       projectName,
     ) as PluginHooks["experimental.session.compacting"],
-    "command.execute.before": createCommandExecuteHook(memClient) as PluginHooks["command.execute.before"],
-    "experimental.text.complete": createTextCompleteHook(memClient, state) as PluginHooks["experimental.text.complete"],
+    "command.execute.before": createCommandExecuteHook(memClient, state, cwd) as PluginHooks["command.execute.before"],
+    "experimental.text.complete": createTextCompleteHook(memClient, state, cwd) as PluginHooks["experimental.text.complete"],
   };
 }
 
